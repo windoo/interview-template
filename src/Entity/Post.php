@@ -2,14 +2,23 @@
 
 namespace App\Entity;
 
-use App\Repository\PostRepository;
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\PostRepository;
+use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
 
 /**
  * @ORM\Entity(repositoryClass=PostRepository::class)
+ * @ORM\HasLifecycleCallbacks
  */
 class Post
 {
+
+    public function __construct()
+    {
+        $this->setCreatedAt(new \DateTime('now'));
+    }
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -17,8 +26,155 @@ class Post
      */
     private $id;
 
+    /**
+     * @ORM\Column(type="string", length=255, options={"default": ""})
+     */
+    private $title;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $url;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $message;
+
+    /**
+     * @ORM\Column(type="integer", options={"default": 0})
+     */
+    private $votes;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $created_at;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="posts")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $user;
+
+    /**
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+    */
+    public function updatedTimestamps(): void
+    {
+        if ($this->getCreatedAt() === null) {
+            $this->setCreatedAt(new \DateTime('now'));
+        }
+    }
+
+    public function getPostAge(): string
+    {
+        $diff = $this->getCreatedAt()->diff(new \DateTime());
+
+        if($diff->y) {
+            $value = $diff->y;
+            $suffix = ' year(s)';
+        } elseif($diff->m) {
+            $value = $diff->m;
+            $suffix = ' month(s)';
+        } elseif($diff->d) {
+            $value = $diff->d;
+            $suffix = ' day(s)';
+        } elseif($diff->h) {
+            $value = $diff->h;
+            $suffix = ' hour(s)';
+        } elseif($diff->i) {
+            $value = $diff->i;
+            $suffix = ' min';
+        } elseif($diff->s) {
+            $value = $diff->s;
+            $suffix = ' sec';
+        }
+
+        return strval($value) . $suffix;
+    }
+
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getTitle(): ?string
+    {
+        return $this->title;
+    }
+
+    public function setTitle(string $title): self
+    {
+        $this->title = $title;
+
+        return $this;
+    }
+
+    public function getUrl(): ?string
+    {
+        return $this->url;
+    }
+
+    public function setUrl(?string $url): self
+    {
+        $this->url = $url;
+
+        return $this;
+    }
+
+    public function getSourceUrl(string $url): string
+    {
+        preg_match('@^(http[s]?:\/\/)?([^\/\s]+)(.*)@i', $this->getUrl(), $matches);
+        return $matches[2];
+    }
+
+    public function getMessage(): ?string
+    {
+        return $this->message;
+    }
+
+    public function setMessage(?string $message): self
+    {
+        $this->message = $message;
+
+        return $this;
+    }
+
+    public function getVotes(): ?int
+    {
+        return $this->votes;
+    }
+
+    public function setVotes(int $votes): self
+    {
+        $this->votes = $votes;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTime
+    {
+        return $this->created_at;
+    }
+
+    public function setCreatedAt(\DateTime $created_at): self
+    {
+        $this->created_at = $created_at;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
+
+        return $this;
     }
 }
