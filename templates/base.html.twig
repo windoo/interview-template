@@ -2,9 +2,7 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        {# Run `composer require symfony/webpack-encore-bundle`
-           and uncomment the following Encore helpers to start using Symfony UX #}
+        <title>{% block title %}Windoo Interview{% endblock %}</title>
         {% block stylesheets %}
             {{ encore_entry_link_tags('app') }}
         {% endblock %}
@@ -14,6 +12,42 @@
             {{ encore_entry_script_tags('app') }}
         {% endblock %}
     </head>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="#">Home</a>
+                </li>
+            </ul>
+            {% if app.user %}
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <span class="nav-link">
+                            {{ app.user.username }}
+                        </span>
+                    </li>
+                    <li>
+                        <div class="btn-nav">
+                            <a class="btn btn-primary btn-small navbar-btn" href="{{ path('app_logout') }}">Logout</a>
+                        </div>
+                    </li>
+                </ul>
+            {% else %}
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a class="nav-link" href="{{ path('registration') }}">Register</a>
+                    </li>
+                    <li>
+                        <div class="btn-nav">
+                            <a class="btn btn-primary btn-small navbar-btn" href="{{ path('app_login') }}">Login</a>
+                        </div>
+                    </li>
+                </ul>
+            {% endif %}
+            </div>
+        </div>
+    </nav>
     <body>
         {% block body %}{% endblock %}
     </body>

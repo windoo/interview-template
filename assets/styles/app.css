@@ -1,3 +1,12 @@
 body {
     background-color: lightgray;
 }
+.login-form, .register-form {
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 5%;
+}
+.login-btn, .register-btn {
+    margin-top: 10px;
+}
