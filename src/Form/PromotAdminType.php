@@ -21,9 +21,6 @@ class PromotAdminType extends AbstractType
                     new NotBlank([
                         'message' => 'Veuillez entrer un mot de passe',
                     ]),
-                    new UserPassword([
-                        'message' => 'Mot de passe invalide',
-                    ]),
                 ],
             ]);
     }

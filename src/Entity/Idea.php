@@ -29,20 +29,36 @@ class Idea
      */
     private $create_at;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
-    private $inFavor;
+    // /**
+    //  * @ORM\Column(type="boolean", nullable=true)
+    //  */
+    // private $inFavor;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
-    private $against;
+    // /**
+    //  * @ORM\Column(type="boolean", nullable=true)
+    //  */
+    // private $against;
 
     /**
      * @ORM\ManyToMany(targetEntity=User::class, mappedBy="vote")
      */
     private $userVote;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="ideas")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $suggester;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $inFavor;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $against;
 
     public function __construct()
     {
@@ -78,29 +94,29 @@ class Idea
         return $this;
     }
 
-    public function getInFavor(): ?bool
-    {
-        return $this->inFavor;
-    }
+    // public function getInFavor(): ?bool
+    // {
+    //     return $this->inFavor;
+    // }
 
-    public function setInFavor(?bool $inFavor): self
-    {
-        $this->inFavor = $inFavor;
+    // public function setInFavor(?bool $inFavor): self
+    // {
+    //     $this->inFavor = $inFavor;
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
-    public function getAgainst(): ?bool
-    {
-        return $this->against;
-    }
+    // public function getAgainst(): ?bool
+    // {
+    //     return $this->against;
+    // }
 
-    public function setAgainst(?bool $against): self
-    {
-        $this->against = $against;
+    // public function setAgainst(?bool $against): self
+    // {
+    //     $this->against = $against;
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
     /**
      * @return Collection|User[]
@@ -125,6 +141,42 @@ class Idea
         if ($this->userVote->removeElement($userVote)) {
             $userVote->removeVote($this);
         }
+
+        return $this;
+    }
+
+    public function getSuggester(): ?User
+    {
+        return $this->suggester;
+    }
+
+    public function setSuggester(?User $suggester): self
+    {
+        $this->suggester = $suggester;
+
+        return $this;
+    }
+
+    public function getInFavor(): ?int
+    {
+        return $this->inFavor;
+    }
+
+    public function setInFavor(int $inFavor): self
+    {
+        $this->inFavor = $inFavor;
+
+        return $this;
+    }
+
+    public function getAgainst(): ?int
+    {
+        return $this->against;
+    }
+
+    public function setAgainst(int $against): self
+    {
+        $this->against = $against;
 
         return $this;
     }

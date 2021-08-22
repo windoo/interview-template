@@ -54,9 +54,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private $vote;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Idea::class, mappedBy="suggester")
+     */
+    private $ideas;
+
     public function __construct()
     {
         $this->vote = new ArrayCollection();
+        $this->ideas = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -192,6 +198,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeVote(Idea $vote): self
     {
         $this->vote->removeElement($vote);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Idea[]
+     */
+    public function getIdeas(): Collection
+    {
+        return $this->ideas;
+    }
+
+    public function addIdea(Idea $idea): self
+    {
+        if (!$this->ideas->contains($idea)) {
+            $this->ideas[] = $idea;
+            $idea->setSuggester($this);
+        }
+
+        return $this;
+    }
+
+    public function removeIdea(Idea $idea): self
+    {
+        if ($this->ideas->removeElement($idea)) {
+            // set the owning side to null (unless already changed)
+            if ($idea->getSuggester() === $this) {
+                $idea->setSuggester(null);
+            }
+        }
 
         return $this;
     }

@@ -7,6 +7,19 @@
         .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
         .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
     </style> #}
+{% for label, flashes in app.session.flashbag.all %}
+    {% for flash in flashes %}
+        {% if ( label == 'success' ) %}
+            <div class="alert alert-success alert-dismissible fade show">
+                {{ flash }}
+            </div>
+        {% elseif ( label == 'error' ) %}
+            <div class="alert alert-danger alert-dismissible fade show">
+                {{ flash }}
+            </div>
+        {% endif %}
+    {% endfor %}
+{% endfor %}
 
        <section>
        <h2>Nouvelle idées</h2>
@@ -18,20 +31,25 @@
 
        <section>
        <h2>Donne ton avis sur ces idées</h2>
-       {% for proposal in all %}
+       <a class="btn btn-secondary" href="{#{ path('date_chronological') }#}">Date Chronologique</a>
+       <a class="btn btn-secondary" href="{#{ path('date_reverse') }#}">Date Antéchronologique</a>
+       {% for proposal in all | reverse %}
         <div class="card">
             <div class="card-body">
-            <p class="card-title">{{ proposal.proposal }}</p>
-            <p>Proposé par  le {{ proposal.createAt |  date("d/m/Y \\à H\\hi") }}</p>
-            </div>
-            <div>
-                <a href="">Pour 👍</a> | <a href="">Contre 👎</a>
-                {% if is_granted("ROLE_ADMIN") %}
-                       | <a href="{{path('delete_idea', {id: proposal.id})}}" >❌ Suppression</a>
-                {% endif %}
+            <p class="card-title">{{ proposal.proposal | capitalize}}</p>
+
+            <p>Proposé par {{ proposal.suggester.firstname }} {{ proposal.suggester.name }} le {{ proposal.createAt |  date("d/m/Y \\à H\\hi") }}</p>
+            <p>({{proposal.inFavor  }})<a href="{{path('in_favor', {id: proposal.id})}}">Pour 👍</a>
+            | ({{proposal.against}})<a href="{{path('against', {id: proposal.id})}}">Contre 👎</a>
+
+            {% if is_granted("ROLE_ADMIN") %}
+                   | <a href="{{path('delete_idea', {id: proposal.id})}}" >❌ Suppression</a>
+            {% endif %}
+            </p>
             </div>
         </div>
        {% endfor %}
        </section>
 
 {% endblock %}
+
