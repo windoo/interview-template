@@ -3,7 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\Idea;
+use App\Entity\Filter;
 use App\Form\IdeaType;
+use App\Form\FilterType;
+use App\Repository\IdeaRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -12,15 +15,26 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class HomepageController extends AbstractController
 {
     /**
+     * @var IdeaRepository
+     */
+    private $repository;
+
+    public function __construct(IdeaRepository $repository)
+    {
+        $repository = $this->repository;
+    }
+
+    /**
      * @Route("/", name="index") 
      */
-    public function index(Request $request): Response
+    public function index(IdeaRepository $repository, Request $request): Response
     {
         $proposal = new Idea();
         $form = $this->createForm(IdeaType::class, $proposal);
         $form->handleRequest($request);
         $user = $this->getUser();
 
+        //Add new idea
         if ($form->isSubmitted() && $form->isValid()) {
             if ($user) {
                 $proposal->setCreateAt(new \DateTime('now'));
@@ -35,12 +49,22 @@ class HomepageController extends AbstractController
             }
         }
 
+        //Search
+        $search = new Filter();
+        $search->page = $request->get('page', 1);
+        $formfilter = $this->createForm(FilterType::class, $search);
+        $formfilter->handleRequest($request);
+        $ideas = $repository->findSearch($search);
+
+        //Show all ideas
         $allProposals = $this->getDoctrine()->getRepository(Idea::class)->findBy([]);
 
         return $this->render('homepage/index.html.twig', [
             'form' => $form->createView(),
             'proposal' => $proposal,
             'all' => $allProposals,
+            'ideas' => $ideas,
+            'filter' => $formfilter->createView(),
         ]);
     }
 

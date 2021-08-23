@@ -3,8 +3,12 @@
 namespace App\Repository;
 
 use App\Entity\Idea;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use App\Entity\Filter;
+use Doctrine\DBAL\Query\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
+use Knp\Component\Pager\PaginatorInterface;
+use Knp\Component\Pager\Pagination\PaginationInterface;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @method Idea|null find($id, $lockMode = null, $lockVersion = null)
@@ -14,10 +18,48 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class IdeaRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry, PaginatorInterface $paginator)
     {
         parent::__construct($registry, Idea::class);
+        $this->paginator = $paginator;
     }
+
+    /**
+     * @return PaginationInterface
+     */
+    public function findSearch(Filter $search): PaginationInterface
+    {
+        $query = $this
+            ->createQueryBuilder('i')
+            ->select('c', 'i')
+            ->join('i.userVote', 'c');
+
+        if (!empty($search->popular)) {
+            $query = $query
+                ->andWhere('i.inFavor > c');
+        }
+
+        if (!empty($search->chrono)) {
+            $query = $query
+                ->orderBy('i.id', 'ASC');
+        }
+
+        if (!empty($search->reverse)) {
+            $query = $query
+                ->orderBy('i.id', 'DESC');
+        }
+
+        $query = $query->getQuery();
+        return $this->paginator->paginate(
+            $query,
+            $search->page,
+            15
+        );
+    }
+
+    // private function getSearchQuery(Filter $search): QueryBuilder
+    // {
+    // }
 
     // /**
     //  * @return Idea[] Returns an array of Idea objects

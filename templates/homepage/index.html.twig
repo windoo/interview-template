@@ -31,9 +31,15 @@
 
        <section>
        <h2>Donne ton avis sur ces idées</h2>
-       <a class="btn btn-secondary" href="{#{ path('date_chronological') }#}">Date Chronologique</a>
-       <a class="btn btn-secondary" href="{#{ path('date_reverse') }#}">Date Antéchronologique</a>
-       {% for proposal in all | reverse %}
+       
+       {# {{ form_start(filter)}}
+        {{form_row(filter.popular) }}
+        {{form_row(filter.chrono) }}
+        {{form_row(filter.reverse) }}
+        <button class="btn btn-secondary">Filtrer</button>
+       {{ form_end(filter)}} #}
+
+       {% for proposal in all %}
         <div class="card">
             <div class="card-body">
             <p class="card-title">{{ proposal.proposal | capitalize}}</p>
