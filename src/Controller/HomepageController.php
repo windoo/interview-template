@@ -54,7 +54,8 @@ class HomepageController extends AbstractController
         $search->page = $request->get('page', 1);
         $formfilter = $this->createForm(FilterType::class, $search);
         $formfilter->handleRequest($request);
-        $ideas = $repository->findSearch($search);
+        $ideas =
+            $repository->findSearch($search);
 
         //Show all ideas
         $allProposals = $this->getDoctrine()->getRepository(Idea::class)->findBy([]);

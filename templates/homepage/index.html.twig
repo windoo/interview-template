@@ -32,14 +32,14 @@
        <section>
        <h2>Donne ton avis sur ces idées</h2>
        
-       {# {{ form_start(filter)}}
+       {{ form_start(filter)}}
         {{form_row(filter.popular) }}
         {{form_row(filter.chrono) }}
         {{form_row(filter.reverse) }}
         <button class="btn btn-secondary">Filtrer</button>
-       {{ form_end(filter)}} #}
+       {{ form_end(filter)}}
 
-       {% for proposal in all %}
+       {% for proposal in ideas %}
         <div class="card">
             <div class="card-body">
             <p class="card-title">{{ proposal.proposal | capitalize}}</p>

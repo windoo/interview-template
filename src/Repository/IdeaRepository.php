@@ -30,26 +30,24 @@ class IdeaRepository extends ServiceEntityRepository
     public function findSearch(Filter $search): PaginationInterface
     {
         $query = $this
-            ->createQueryBuilder('i')
-            ->select('c', 'i')
-            ->join('i.userVote', 'c');
+            ->createQueryBuilder('idea');
 
-        if (!empty($search->popular)) {
+        if (($search->popular)) {
             $query = $query
-                ->andWhere('i.inFavor > c');
+                ->orderBy('idea.inFavor', 'DESC');
         }
 
-        if (!empty($search->chrono)) {
+        if (($search->chrono)) {
             $query = $query
-                ->orderBy('i.id', 'ASC');
+                ->orderBy('idea.create_at', 'ASC');
         }
 
-        if (!empty($search->reverse)) {
+        if (($search->reverse)) {
             $query = $query
-                ->orderBy('i.id', 'DESC');
+                ->orderBy('idea.create_at', 'DESC');
         }
 
-        $query = $query->getQuery();
+        $query = $query->getQuery()->getResult();
         return $this->paginator->paginate(
             $query,
             $search->page,
