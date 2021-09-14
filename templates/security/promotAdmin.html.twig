@@ -1,0 +1,16 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}Promot to admin{% endblock %}
+
+{% block content %}
+
+    <section>
+    <h2>Devenir Administrateur</h2>
+
+    {{ form_start(form) }}
+        {{ form_row(form.secret, {'attr':{'class': 'form-control'}}) }}
+
+        <button type="submit" class="btn btn-primary">Administrateur</button>
+    {{ form_end(form) }}
+    </section>
+{% endblock %}

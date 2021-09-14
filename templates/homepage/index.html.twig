@@ -1,28 +1,61 @@
-{% extends 'base.html.twig' %}
+{% extends 'layout.html.twig' %}
 
-{% block title %}Hello HomepageController!{% endblock %}
+{% block title %}Boite à idées{% endblock %}
 
-{% block body %}
-    <style>
+{% block content %}
+    {# <style>
         .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
         .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-    </style>
+    </style> #}
+{% for label, flashes in app.session.flashbag.all %}
+    {% for flash in flashes %}
+        {% if ( label == 'success' ) %}
+            <div class="alert alert-success alert-dismissible fade show">
+                {{ flash }}
+            </div>
+        {% elseif ( label == 'error' ) %}
+            <div class="alert alert-danger alert-dismissible fade show">
+                {{ flash }}
+            </div>
+        {% endif %}
+    {% endfor %}
+{% endfor %}
 
-    <div class="example-wrapper">
-        <h1>Hello {{ name }}! ✅</h1>
-        <p>This is a symfony message</p>
+       <section>
+       <h2>Nouvelle idées</h2>
+       {{ form_start(form)}}
+        {{form_row(form.proposal, {'attr':{'class': 'form-control'}} ) }}
+        <button class="btn btn-primary">Envoyer à la boite à idées</button>
+       {{ form_end(form)}}
+       </section>
 
-        <div id="react-root" data-props="{{ {name: name}|json_encode }}"></div>
-        <p>This is a react message, change the query parameter "name" to make it dynamic:</p>
-        <p>
-            <a href="{{ url('homepage', {name: 'Windoo'}) }}">
-                Say hello Windoo
-            </a>
-        </p>
-        This friendly message is coming from:
-        <ul>
-            <li>Your controller at <code><a href="{{ '/home/florent/dev/interview-template/src/Controller/HomepageController.php'|file_link(0) }}">src/Controller/HomepageController.php</a></code></li>
-            <li>Your template at <code><a href="{{ '/home/florent/dev/interview-template/templates/homepage/index.html.twig'|file_link(0) }}">templates/homepage/index.html.twig</a></code></li>
-        </ul>
-    </div>
+       <section>
+       <h2>Donne ton avis sur ces idées</h2>
+       
+       {{ form_start(filter)}}
+        {{form_row(filter.popular) }}
+        {{form_row(filter.chrono) }}
+        {{form_row(filter.reverse) }}
+        <button class="btn btn-secondary">Filtrer</button>
+       {{ form_end(filter)}}
+
+       {% for proposal in ideas %}
+        <div class="card">
+            <div class="card-body">
+            <p class="card-title">{{ proposal.proposal | capitalize}}</p>
+
+            <p>Proposé par {{ proposal.suggester.firstname }} {{ proposal.suggester.name }} le {{ proposal.createAt |  date("d/m/Y \\à H\\hi") }}</p>
+            <p>({{proposal.inFavor  }})<a href="{{path('in_favor', {id: proposal.id})}}">Pour 👍</a>
+            | ({{proposal.against}})<a href="{{path('against', {id: proposal.id})}}">Contre 👎</a>
+
+            {% if is_granted("ROLE_ADMIN") %}
+                   | <a href="{{path('delete_idea', {id: proposal.id})}}" >❌ Suppression</a>
+            {% endif %}
+            </p>
+            </div>
+        </div>
+       {% endfor %}
+       </section>
+
 {% endblock %}
+
